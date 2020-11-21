@@ -25,17 +25,19 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BendRotationRandom: 0.2
-    - _BladeCurve: 4
-    - _BladeForward: 0.38
-    - _BladeHeight: 0.5
+    - _BladeCurve: 2.58
+    - _BladeForward: 0.5
+    - _BladeHeight: 0.93
     - _BladeHeightRandom: 0.2
     - _BladeWidth: 0.05
     - _BladeWidthRandom: 0.02
     - _TessellationUniform: 6
+    - _TrampleStrength: 0.592
     - _TranslucentGain: 0.352
-    - _WindStrength: 1
+    - _WindStrength: 0.08
     m_Colors:
     - _BottomColor: {r: 0.11701207, g: 0.24528301, b: 0, a: 1}
     - _TopColor: {r: 0.15395391, g: 1, b: 0, a: 1}
+    - _Trample: {r: 0.56, g: 0.67, b: -0.23, a: 1.6}
     - _WindFrequency: {r: 0.05, g: 0.05, b: 0, a: 0}
   m_BuildTextureStacks: []

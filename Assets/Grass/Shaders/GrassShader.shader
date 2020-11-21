@@ -1,4 +1,7 @@
-﻿//Grass shader based on tutorial by Roystan: https://roystan.net/articles/grass-shader.html
+﻿/*
+ * Grass shader based on tutorial by Roystan: https://roystan.net/articles/grass-shader.html
+ * Added to simulate interaction with objects in the scene
+*/
 Shader "Grass"
 {
     Properties
@@ -23,6 +26,10 @@ Shader "Grass"
 		_WindDistortionMap("Wind Distortion Map", 2D) = "white" {}
 		_WindFrequency("Wind Frequency", Vector) = (0.05, 0.05, 0, 0)
 		_WindStrength("Wind Strength", Float) = 1
+		
+		[Header(Trample)]
+		_Trample("Trample", Vector) = (0, 0, 0, 0)
+		_TrampleStrength("Trample Strength", Range(0, 1)) = 0.2
     }
 
 	CGINCLUDE
@@ -73,7 +80,9 @@ Shader "Grass"
 	float4 _WindDistortionMap_ST;
 	float2 _WindFrequency;
 	float _WindStrength;
-
+    
+    float4 _Trample;
+	float _TrampleStrength;
 	
 	struct geometryOutput
 	{
@@ -115,7 +124,7 @@ Shader "Grass"
 	
 		float3x3 facingRotationMatrix = AngleAxis3x3(rand(pos) * UNITY_TWO_PI, float3(0, 0, 1));
 		float3x3 bendRotationMatrix = AngleAxis3x3(rand(pos.zzx) * _BendRotationRandom * UNITY_TWO_PI * 0.5, float3(-1, 0, 0));
-	
+
 		float2 uv = pos.xz * _WindDistortionMap_ST.xy + _WindDistortionMap_ST.zw + _WindFrequency * _Time.y;
 		float2 windSample = (tex2Dlod(_WindDistortionMap, float4(uv, 0, 0)).xy * 2 - 1) * _WindStrength;
 		float3 wind = normalize(float3(windSample.x, windSample.y, 0));
@@ -123,7 +132,7 @@ Shader "Grass"
 		
 		float3x3 transformationMatrix = mul(mul(mul(tangentToLocal, windRotation), facingRotationMatrix), bendRotationMatrix);
 		float3x3 transformationMatrixFacing = mul(tangentToLocal, facingRotationMatrix);
-		
+
 		float width = (rand(pos.xyz) * 2 - 1) * _BladeWidthRandom + _BladeWidth;
 		float height = (rand(pos.xyz) * 2 - 1) * _BladeHeightRandom + _BladeHeight;
 		float forward = rand(pos.yyz) * _BladeForward;
@@ -138,6 +147,10 @@ Shader "Grass"
 			
 			float3x3 transformMatrix = i == 0 ? transformationMatrixFacing : transformationMatrix;
 
+			float3 trampleDiff = pos - _Trample.xyz;
+			float4 trample = float4(float3(normalize(trampleDiff).x, 0, normalize(trampleDiff).z) * (1.0 - saturate(length(trampleDiff) / _Trample.w)), 0);
+			pos += trample * _TrampleStrength;
+			
 			triStream.Append(GenerateGrassVertex(pos, segmentWidth, segmentHeight, segmentForward, float2(0, t), transformMatrix));
 			triStream.Append(GenerateGrassVertex(pos, -segmentWidth, segmentHeight, segmentForward, float2(1, t), transformMatrix));
 		}
