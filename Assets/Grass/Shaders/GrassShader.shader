@@ -109,8 +109,6 @@ Shader "Grass"
 	[maxvertexcount(BLADE_SEGMENTS * 2 + 1)]
 	void geo(triangle vertexOutput IN[3] : SV_POSITION, inout TriangleStream<geometryOutput> triStream)
 	{
-		geometryOutput o;
-		
 		float3 pos = IN[0].vertex;
 		float3 normal = IN[0].normal;
 		float4 tangent = IN[0].tangent;
@@ -140,14 +138,14 @@ Shader "Grass"
 		for (int i = 0; i < BLADE_SEGMENTS; i++)
 		{
 			float t = i / (float)BLADE_SEGMENTS;
-
 			float segmentHeight = height * t;
 			float segmentWidth = width * (1 - t);
 			float segmentForward = pow(t, _BladeCurve) * forward;
 			
 			float3x3 transformMatrix = i == 0 ? transformationMatrixFacing : transformationMatrix;
 
-			float3 trampleDiff = pos - _Trample.xyz;
+			float4 objectOrigin = mul(unity_ObjectToWorld, float4(0.0,0.0,0.0,1.0));
+			float3 trampleDiff = pos - (_Trample.xyz - objectOrigin);
 			float4 trample = float4(float3(normalize(trampleDiff).x, 0, normalize(trampleDiff).z) * (1.0 - saturate(length(trampleDiff) / _Trample.w)), 0);
 			pos += trample * _TrampleStrength;
 			
