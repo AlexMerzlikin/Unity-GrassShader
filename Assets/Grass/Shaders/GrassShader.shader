@@ -29,7 +29,7 @@ Shader "Grass"
 
         [Header(Trample)]
         _Trample("Trample", Vector) = (0, 0, 0, 0)
-        _TrampleStrength("Trample Strength", Range(0, 1)) = 0.2
+        _TrampleStrength("Trample Strength", Range(0, 10)) = 0.2
     }
 
     CGINCLUDE
@@ -146,13 +146,19 @@ Shader "Grass"
 
             float3x3 transformMatrix = i == 0 ? transformationMatrixFacing : transformationMatrix;
 
-            float4 objectOrigin = mul(unity_ObjectToWorld, float4(0.0, 0.0, 0.0, 1.0));
-            float3 trampleDiff = pos - (_Trample.xyz - objectOrigin);
-            float4 trample = float4(
-                float3(normalize(trampleDiff).x,
-                       0,
-                       normalize(trampleDiff).z) * (1.0 - saturate(length(trampleDiff) / _Trample.w)), 0);
-            pos += trample * _TrampleStrength;
+
+            if (i > 0)
+            {
+                float4 objectOrigin = mul(unity_ObjectToWorld, float4(0.0, 0.0, 0.0, 1.0));
+                float3 trampleDiff = pos - (_Trample.xyz - objectOrigin);
+                float4 trample = float4(
+                    float3(normalize(trampleDiff).x,
+                        0,
+                        normalize(trampleDiff).z) * (1.0 - saturate(length(trampleDiff) / _Trample.w)),
+                        0);
+                pos += trample * _TrampleStrength;
+            }
+
 
             triStream.Append(
                 GenerateGrassVertex(pos, segmentWidth, segmentHeight, segmentForward, float2(0, t), transformMatrix));
