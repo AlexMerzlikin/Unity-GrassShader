@@ -36,7 +36,7 @@ Shader "Grass"
     #include "UnityCG.cginc"
     #include "CustomTessellation.cginc"
 
-    #define BLADE_SEGMENTS 3
+    #define BLADE_SEGMENTS 5
 
     // Simple noise function, sourced from http://answers.unity.com/answers/624136/view.html
     // Extended discussion on this function can be found at the following link:
@@ -136,6 +136,7 @@ Shader "Grass"
         float width = (rand(pos.xyz) * 2 - 1) * _BladeWidthRandom + _BladeWidth;
         float height = (rand(pos.xyz) * 2 - 1) * _BladeHeightRandom + _BladeHeight;
         float forward = rand(pos.yyz) * _BladeForward;
+        float4 objectOrigin = mul(unity_ObjectToWorld, float4(0.0, 0.0, 0.0, 1.0));
 
         for (int i = 0; i < BLADE_SEGMENTS; i++)
         {
@@ -146,19 +147,16 @@ Shader "Grass"
 
             float3x3 transformMatrix = i == 0 ? transformationMatrixFacing : transformationMatrix;
 
-
             if (i > 0)
             {
-                float4 objectOrigin = mul(unity_ObjectToWorld, float4(0.0, 0.0, 0.0, 1.0));
                 float3 trampleDiff = pos - (_Trample.xyz - objectOrigin);
                 float4 trample = float4(
                     float3(normalize(trampleDiff).x,
-                        0,
-                        normalize(trampleDiff).z) * (1.0 - saturate(length(trampleDiff) / _Trample.w)),
-                        0);
+                           0,
+                           normalize(trampleDiff).z) * (1.0 - saturate(length(trampleDiff) / _Trample.w)),
+                    0);
                 pos += trample * _TrampleStrength;
             }
-
 
             triStream.Append(
                 GenerateGrassVertex(pos, segmentWidth, segmentHeight, segmentForward, float2(0, t), transformMatrix));
@@ -166,6 +164,13 @@ Shader "Grass"
                 GenerateGrassVertex(pos, -segmentWidth, segmentHeight, segmentForward, float2(1, t), transformMatrix));
         }
 
+        float3 trampleDiff = pos - (_Trample.xyz - objectOrigin);
+        float4 trample = float4(
+            float3(normalize(trampleDiff).x,
+                   0,
+                   normalize(trampleDiff).z) * (1.0 - saturate(length(trampleDiff) / _Trample.w)),
+            0);
+        pos += trample * _TrampleStrength;
         triStream.Append(GenerateGrassVertex(pos, 0, height, forward, float2(0.5, 1), transformationMatrix));
     }
     ENDCG

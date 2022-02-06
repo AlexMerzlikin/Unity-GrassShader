@@ -23,21 +23,22 @@ Material:
         m_Texture: {fileID: 2800000, guid: f23884cae3ddbbe46b33ad9964eb5f63, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _BendRotationRandom: 0.2
     - _BladeCurve: 2.58
-    - _BladeForward: 0.5
-    - _BladeHeight: 0.93
+    - _BladeForward: 0
+    - _BladeHeight: 1.23
     - _BladeHeightRandom: 0.2
     - _BladeWidth: 0.05
     - _BladeWidthRandom: 0.02
     - _TessellationUniform: 6
-    - _TrampleStrength: 0.592
+    - _TrampleStrength: 0.51
     - _TranslucentGain: 0.352
     - _WindStrength: 0.08
     m_Colors:
     - _BottomColor: {r: 0.11701207, g: 0.24528301, b: 0, a: 1}
     - _TopColor: {r: 0.15395391, g: 1, b: 0, a: 1}
-    - _Trample: {r: 0.56, g: 0.67, b: -0.23, a: 1.6}
+    - _Trample: {r: -1.05, g: -0.029999971, b: 1.91, a: 1.27}
     - _WindFrequency: {r: 0.05, g: 0.05, b: 0, a: 0}
   m_BuildTextureStacks: []

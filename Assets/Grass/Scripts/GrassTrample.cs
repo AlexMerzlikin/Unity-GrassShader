@@ -7,7 +7,7 @@ namespace Grass.Scripts
     {
         [SerializeField] private Material material;
         [SerializeField] [Range(0, 10)] private float radius;
-        [SerializeField] [Range(0, 5)] private float heightOffset;
+        [SerializeField] [Range(-2, 5)] private float heightOffset;
 
         private Transform cachedTransform;
         private readonly int grassTrampleProperty = Shader.PropertyToID("_Trample");
