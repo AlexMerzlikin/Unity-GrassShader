@@ -106,6 +106,16 @@ Shader "Grass"
         return VertexOutput(localPosition, uv);
     }
 
+    float4 GetTrampleVector(float3 pos, float4 objectOrigin)
+    {
+        float3 trampleDiff = pos - (_Trample.xyz - objectOrigin);
+        return float4(
+            float3(normalize(trampleDiff).x,
+                   0,
+                   normalize(trampleDiff).z) * (1.0 - saturate(length(trampleDiff) / _Trample.w)),
+            0);
+    }
+
     [maxvertexcount(BLADE_SEGMENTS * 2 + 1)]
     void geo(triangle vertexOutput IN[3] : SV_POSITION, inout TriangleStream<geometryOutput> triStream)
     {
@@ -149,12 +159,7 @@ Shader "Grass"
 
             if (i > 0)
             {
-                float3 trampleDiff = pos - (_Trample.xyz - objectOrigin);
-                float4 trample = float4(
-                    float3(normalize(trampleDiff).x,
-                           0,
-                           normalize(trampleDiff).z) * (1.0 - saturate(length(trampleDiff) / _Trample.w)),
-                    0);
+                float4 trample = GetTrampleVector(pos, objectOrigin);
                 pos += trample * _TrampleStrength;
             }
 
@@ -164,12 +169,7 @@ Shader "Grass"
                 GenerateGrassVertex(pos, -segmentWidth, segmentHeight, segmentForward, float2(1, t), transformMatrix));
         }
 
-        float3 trampleDiff = pos - (_Trample.xyz - objectOrigin);
-        float4 trample = float4(
-            float3(normalize(trampleDiff).x,
-                   0,
-                   normalize(trampleDiff).z) * (1.0 - saturate(length(trampleDiff) / _Trample.w)),
-            0);
+        float4 trample = GetTrampleVector(pos, objectOrigin);
         pos += trample * _TrampleStrength;
         triStream.Append(GenerateGrassVertex(pos, 0, height, forward, float2(0.5, 1), transformationMatrix));
     }
